@@ -1137,8 +1137,16 @@ function render() {
   }
 
   // Tiles (sorted by level, then by name for ties) — only LPS teams, clickable, jump to that team's tab
-  const NAME_PRIORITY = ['LPS', 'LPS/Musta', 'LPS/Vihreä', 'LPS/Valkoinen'];
-  const namePrio = n => { const i = NAME_PRIORITY.indexOf(n); return i >= 0 ? i : 99; };
+  const namePrio = n => {
+    if (!n) return 99;
+    const l = n.toLowerCase();
+    if (!l.includes('/')) return 0;          // LPS (pääjoukkue, ei suffiksia)
+    if (l.includes('musta'))    return 1;
+    if (l.includes('vihre'))    return 2;
+    if (l.includes('valko'))    return 3;
+    if (l.includes('sinin'))    return 4;
+    return 99;
+  };
   const allLevelsSorted = Object.entries(LPS_BY_GROUP).sort(([,a], [,b]) =>
     a.level - b.level || namePrio(a.name) - namePrio(b.name));
   const tiles = allLevelsSorted
