@@ -1136,8 +1136,11 @@ function render() {
     g.lpsMatches.forEach(m => { m.oppPos = g.oppPos[m.oppId]; });
   }
 
-  // Tiles (sorted by level) — only LPS teams, clickable, jump to that team's tab
-  const allLevelsSorted = Object.entries(LPS_BY_GROUP).sort(([,a], [,b]) => a.level - b.level);
+  // Tiles (sorted by level, then by name for ties) — only LPS teams, clickable, jump to that team's tab
+  const NAME_PRIORITY = ['LPS', 'LPS/Musta', 'LPS/Vihreä', 'LPS/Valkoinen'];
+  const namePrio = n => { const i = NAME_PRIORITY.indexOf(n); return i >= 0 ? i : 99; };
+  const allLevelsSorted = Object.entries(LPS_BY_GROUP).sort(([,a], [,b]) =>
+    a.level - b.level || namePrio(a.name) - namePrio(b.name));
   const tiles = allLevelsSorted
     .filter(([, info]) => info.id !== null)
     .map(([gid, info]) => {
